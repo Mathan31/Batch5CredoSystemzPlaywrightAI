@@ -1,0 +1,669 @@
+Note : Create the below Framework inside parent folder "AI Implementation"
+
+# Playwright Framework Generation Guidelines (TypeScript)
+
+## Objective
+
+Generate a production-ready, enterprise-grade Playwright automation framework using TypeScript. The framework must be scalable, maintainable, extensible, and easy for new team members to onboard.
+
+The generated framework should follow modern software engineering practices, SOLID principles, and enterprise automation standards.
+
+---
+
+## Technology Stack
+
+* Playwright (Latest Stable Version)
+* TypeScript
+* Node.js (LTS)
+* Playwright Test Runner
+* Allure Reporting
+* ESLint
+* Prettier
+* Faker.js
+* dotenv
+* GitHub Actions
+* Jenkins Ready
+
+---
+
+## Architecture
+
+Implement a layered architecture with strict separation of concerns.
+
+### Layers
+
+1. Test Layer
+
+   * Contains `.spec.ts` files.
+   * Should only contain test logic.
+   * No locator or UI interaction code.
+
+2. Page Layer
+
+   * Implements Page Object Model (POM).
+   * Contains page-level business actions.
+   * Must inherit from `BasePage`.
+
+3. Component Layer
+
+   * Reusable UI components.
+   * Examples:
+
+     * Header
+     * Footer
+     * Navigation Menu
+     * Side Panel
+     * Modal
+     * Toast Messages
+     * Table Component
+
+4. Service Layer
+
+   * API clients and utilities.
+   * REST integrations.
+   * Authentication services.
+   * API setup/teardown support.
+
+5. Core Layer
+
+   * Base classes.
+   * Fixtures.
+   * Browser management.
+   * Dependency Injection.
+   * Common framework utilities.
+
+---
+
+## Design Principles
+
+Strictly follow:
+
+* SOLID Principles
+* DRY Principle
+* KISS Principle
+* Clean Code Principles
+* Single Responsibility Principle
+
+Ensure:
+
+* Loose coupling.
+* High cohesion.
+* Dependency Injection using Playwright Fixtures.
+* Minimal code duplication.
+* Maximum reusability.
+
+---
+
+## Base Classes
+
+Implement:
+
+### BasePage
+
+Responsibilities:
+
+* Common UI actions.
+* Navigation.
+* Page synchronization.
+* Logging.
+* Error handling.
+* Screenshot utilities.
+
+Example methods:
+
+```typescript
+navigate()
+click()
+fill()
+type()
+clear()
+hover()
+doubleClick()
+rightClick()
+waitForElement()
+waitForPageLoad()
+takeScreenshot()
+```
+
+---
+
+### BaseTest
+
+Responsibilities:
+
+* Common test setup.
+* Common test teardown.
+* Fixture initialization.
+* Environment setup.
+* Reporting hooks.
+
+---
+
+## Dependency Injection
+
+Implement Playwright custom fixtures.
+
+Example:
+
+```typescript
+test.extend({
+    loginPage,
+    dashboardPage,
+    homePage
+});
+```
+
+Requirements:
+
+* Lazy initialization.
+* Type-safe fixtures.
+* Fixture reuse across tests.
+* Support parallel execution.
+
+---
+
+## Wrapper Methods
+
+Create reusable wrapper classes.
+
+### ElementActions
+
+Implement:
+
+* click()
+* type()
+* fill()
+* hover()
+* scrollIntoView()
+* check()
+* uncheck()
+
+---
+
+### WaitActions
+
+Implement:
+
+* waitForVisible()
+* waitForHidden()
+* waitForEnabled()
+* waitForPageLoad()
+* waitForNetworkIdle()
+
+---
+
+### DropdownActions
+
+Implement:
+
+* selectByText()
+* selectByValue()
+* selectByIndex()
+
+---
+
+## Smart Wait Strategy
+
+Requirements:
+
+* Use Playwright Locator API.
+* Avoid:
+
+  * waitForTimeout()
+  * Hard-coded delays
+
+Preferred:
+
+```typescript
+locator.waitFor()
+expect(locator).toBeVisible()
+page.waitForLoadState()
+```
+
+---
+
+## Error Handling
+
+Implement centralized exception handling.
+
+Create:
+
+```text
+exceptionUtil.ts
+```
+
+Responsibilities:
+
+* Capture exceptions.
+* Attach screenshots.
+* Log failures.
+* Preserve stack traces.
+* Generate meaningful messages.
+
+Example:
+
+```typescript
+try {
+    await click();
+} catch(error) {
+    Logger.error(error);
+    throw error;
+}
+```
+
+---
+
+## Logging
+
+Create:
+
+```text
+logger.ts
+```
+
+Requirements:
+
+* INFO
+* DEBUG
+* WARN
+* ERROR
+
+Support:
+
+* Console logs
+* File logs
+* Report attachment
+
+Preferred libraries:
+
+* Winston
+* Pino
+
+---
+
+## Reporting
+
+Implement:
+
+### Playwright HTML Report
+
+Support:
+
+* Screenshots
+* Videos
+* Traces
+
+### Allure Reporting
+
+Attach:
+
+* Screenshots
+* Videos
+* Logs
+* Trace files
+* Environment details
+
+Framework should automatically attach artifacts upon failures.
+
+---
+
+## Execution Requirements
+
+Support:
+
+### Parallel Execution
+
+```typescript
+fullyParallel: true
+workers: process.env.CI ? 2 : undefined
+```
+
+### Cross Browser
+
+* Chromium
+* Firefox
+* WebKit
+
+### Tag Execution
+
+Support:
+
+```bash
+npx playwright test --grep @smoke
+npx playwright test --grep @regression
+```
+
+Supported Tags:
+
+* @smoke
+* @regression
+* @sanity
+* @api
+* @ui
+
+---
+
+### Retry Support
+
+```typescript
+retries: 2
+```
+
+Framework must support flaky test handling.
+
+---
+
+## Environment Management
+
+Implement:
+
+```text
+.env.dev
+.env.qa
+.env.uat
+.env.prod
+```
+
+Create:
+
+```text
+environmentManager.ts
+```
+
+Responsibilities:
+
+* Load environment.
+* Resolve base URL.
+* Resolve credentials.
+* Resolve timeout values.
+
+Example:
+
+```typescript
+BASE_URL=
+USERNAME=
+PASSWORD=
+TIMEOUT=
+```
+
+---
+
+## Test Data Strategy
+
+Support:
+
+1. JSON
+2. API-driven data
+3. Faker.js
+4. Dynamic data
+
+Implement:
+
+```text
+dataFactory.ts
+```
+
+Responsibilities:
+
+* Generate users.
+* Generate emails.
+* Generate phone numbers.
+* Generate addresses.
+
+---
+
+## API Support
+
+Implement:
+
+```text
+services/
+```
+
+Examples:
+
+```typescript
+loginService.ts
+userService.ts
+tokenService.ts
+```
+
+Requirements:
+
+* API setup.
+* API teardown.
+* Token generation.
+* Shared API utilities.
+
+---
+
+## Network Mocking
+
+Support:
+
+```typescript
+page.route()
+route.fulfill()
+route.abort()
+route.continue()
+```
+
+Examples:
+
+* Mock APIs.
+* Stub responses.
+* Simulate failures.
+* Validate request payloads.
+
+---
+
+## Mobile Support
+
+Implement:
+
+```typescript
+devices["iPhone 15"]
+devices["Pixel 9"]
+```
+
+Framework should support:
+
+* Responsive testing.
+* Mobile emulation.
+* Tablet emulation.
+
+---
+
+## CI/CD
+
+### GitHub Actions
+
+Generate:
+
+```text
+.github/workflows/playwright.yml
+```
+
+Pipeline:
+
+1. Install dependencies.
+2. Install Playwright.
+3. Execute tests.
+4. Publish reports.
+5. Upload artifacts.
+
+---
+
+### Jenkins
+
+Provide:
+
+```text
+Jenkinsfile
+```
+
+Requirements:
+
+* Parameterized execution.
+* Environment selection.
+* Tag execution.
+* Artifact publishing.
+
+---
+
+## Code Quality
+
+Configure:
+
+### ESLint
+
+Rules:
+
+* No unused imports.
+* No any type.
+* Explicit return types.
+* Consistent naming.
+
+### Prettier
+
+Ensure:
+
+* Consistent formatting.
+* Automatic formatting support.
+
+---
+
+## Naming Conventions
+
+| Artifact   | Convention    |
+| ---------- | ------------- |
+| Class      | PascalCase    |
+| Method     | camelCase     |
+| Variable   | camelCase     |
+| Constants  | UPPER_CASE    |
+| Files      | camelCase     |
+| Interfaces | Prefix with I |
+
+Examples:
+
+```typescript
+LoginPage
+loginPage.ts
+IUser
+BASE_URL
+```
+
+---
+
+## Folder Structure
+
+```text
+playwright-framework/
+│
+├── playwright.config.ts
+├── package.json
+├── tsconfig.json
+│
+├── src/
+│   ├── core/
+│   │   ├── baseTest.ts
+│   │   ├── basePage.ts
+│   │   ├── browserFactory.ts
+│   │   ├── customFixtures.ts
+│   │
+│   ├── wrappers/
+│   │   ├── elementActions.ts
+│   │   ├── waitActions.ts
+│   │   └── dropdownActions.ts
+│   │
+│   ├── components/
+│   │   ├── headerComponent.ts
+│   │   ├── footerComponent.ts
+│   │   ├── sidebarComponent.ts
+│   │   └── modalComponent.ts
+│   │
+│   ├── services/
+│   │   ├── loginService.ts
+│   │   ├── userService.ts
+│   │   └── tokenService.ts
+│   │
+│   ├── pages/
+│   │   ├── loginPage.ts
+│   │   ├── dashboardPage.ts
+│   │   └── homePage.ts
+│   │
+│   ├── tests/
+│   │   ├── login/
+│   │   └── dashboard/
+│   │
+│   ├── test-data/
+│   │   ├── json/
+│   │   └── dataFactory.ts
+│   │
+│   ├── utils/
+│   │   ├── logger.ts
+│   │   ├── screenshotUtil.ts
+│   │   ├── exceptionUtil.ts
+│   │   ├── environmentManager.ts
+│   │   └── constants.ts
+│   │
+│   └── types/
+│       └── interfaces.ts
+│
+├── reports/
+├── test-results/
+├── allure-results/
+├── allure-report/
+├── .github/
+│   └── workflows/
+│       └── playwright.yml
+│
+└── Jenkinsfile
+```
+
+---
+
+## Acceptance Criteria
+
+The framework MUST:
+
+1. Compile without errors.
+2. Execute in Chromium, Firefox, and WebKit.
+3. Support parallel execution.
+4. Support multiple environments.
+5. Support tagging.
+6. Support retries.
+7. Support Allure and HTML reports.
+8. Capture screenshots, videos, and traces on failure.
+9. Support API testing.
+10. Support network mocking.
+11. Support mobile emulation.
+12. Support GitHub Actions.
+13. Support Jenkins.
+14. Follow SOLID principles.
+15. Be easy for new automation engineers to extend.
+
+---
+
+## Final Deliverables
+
+Generate:
+
+* Complete Playwright framework.
+* All source code.
+* Sample pages.
+* Sample tests.
+* Sample fixtures.
+* Reporting setup.
+* CI/CD configuration.
+* Documentation.
+* README.md.
+* Installation instructions.
+* Execution commands.
+* Troubleshooting section.
+
+The resulting framework should be considered production-ready and suitable for enterprise applications with hundreds of test cases and multiple contributors.
+
+Note: Apply the above framework with below Test Application and create atlease 5 Test Cases separate based on Test Sceanario folder.
+
+https://www.saucedemo.com/
